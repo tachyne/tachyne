@@ -9,8 +9,8 @@
 **Work in progress.** tachyne is young and moving fast: a full survival game
 runs today, but expect rough edges, missing vanilla features, and breaking
 changes between updates. **Bug reports are genuinely useful** — please open a
-GitHub Issue with your client version/edition and what you saw. Contributions
-are welcome too: see [CONTRIBUTING.md](CONTRIBUTING.md).
+GitHub Issue with your client version/edition and what you saw. Contributions are
+welcome too — see each code repo's `CONTRIBUTING.md`.
 
 
 **One world, every client.** tachyne is a Minecraft-compatible server written
