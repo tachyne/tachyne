@@ -10,3 +10,12 @@ services:
               "-spawn", "-647,1447",
               "-gamemode", "creative",
               "-ops", "${TACHYNE_OPS:-}"]
+  # Vistas are the point here: honor render-distance sliders up to the full
+  # attach radius (the default cap is 12). Chunk delivery is client-paced
+  # (vanilla chunk batches), so slower machines just fill in more gradually.
+  gw-java-770:
+    environment:
+      TACHYNE_VIEW_CAP: "32"
+  gw-java-776:
+    environment:
+      TACHYNE_VIEW_CAP: "32"
