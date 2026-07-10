@@ -1,0 +1,12 @@
+# Earth-mode overlay: the same stack, but the world is GREATER CAPE TOWN at
+# 1:1 scale from real elevation data. You spawn in the city bowl looking up
+# at Table Mountain. Creative by default — it's a world for exploring.
+#
+#   docker compose -f docker-compose.yml -f docker-compose.earth.yml up -d
+services:
+  world:
+    command: ["-attach", ":25500",
+              "-earth", "capetown", "-earth-vscale", "4.5",
+              "-spawn", "-647,1447",
+              "-gamemode", "creative",
+              "-ops", "${TACHYNE_OPS:-}"]

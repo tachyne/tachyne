@@ -1,0 +1,197 @@
+# tachyne on Kubernetes — the single-world (unsharded) stack: the full,
+# unconstrained Minecraft experience with one world pod. Apply, point your
+# client at the ingress service, play.
+#
+#   kubectl apply -f tachyne.yaml
+#
+# Change the attach token before any real use. For the sharded multi-pod
+# world and earth mode, see github.com/tachyne/tachyne-world (deploy/ and
+# docs/SHARDING-BUILD.md, docs/EARTH.md).
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: tachyne
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: tachyne-attach-token
+  namespace: tachyne
+stringData:
+  token: change-me-please # shared secret between gateways and the world
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: tachyne-world
+  namespace: tachyne
+spec:
+  serviceName: tachyne-world
+  replicas: 1
+  selector:
+    matchLabels: { app: tachyne-world }
+  template:
+    metadata:
+      labels: { app: tachyne-world }
+    spec:
+      containers:
+        - name: world
+          image: ghcr.io/tachyne/tachyne-world:latest
+          args: ["-attach", ":25500", "-gamemode", "survival", "-ops", "<your-name>"]
+          env:
+            - name: ATTACH_TOKEN
+              valueFrom: { secretKeyRef: { name: tachyne-attach-token, key: token } }
+          ports: [{ containerPort: 25500, name: attach }]
+          volumeMounts: [{ name: data, mountPath: /var/world }]
+          resources:
+            requests: { cpu: 100m, memory: 256Mi }
+            limits: { cpu: "2", memory: 1Gi }
+  volumeClaimTemplates:
+    - metadata: { name: data }
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        resources: { requests: { storage: 5Gi } }
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: tachyne-world
+  namespace: tachyne
+spec:
+  selector: { app: tachyne-world }
+  ports: [{ port: 25500, name: attach }]
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tachyne-gw-java-770
+  namespace: tachyne
+spec:
+  replicas: 1
+  selector:
+    matchLabels: { app: tachyne-gw-java-770 }
+  template:
+    metadata:
+      labels: { app: tachyne-gw-java-770 }
+    spec:
+      containers:
+        - name: gw
+          image: ghcr.io/tachyne/tachyne-gw-java-770:latest
+          env:
+            - { name: TACHYNE_LISTEN, value: ":25570" }
+            - { name: TACHYNE_BACKEND, value: "tachyne-world.tachyne.svc:25500" }
+            - name: TACHYNE_ATTACH_TOKEN
+              valueFrom: { secretKeyRef: { name: tachyne-attach-token, key: token } }
+          ports: [{ containerPort: 25570 }]
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: tachyne-gw-java-770
+  namespace: tachyne
+spec:
+  selector: { app: tachyne-gw-java-770 }
+  ports: [{ port: 25570 }]
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tachyne-gw-java-776
+  namespace: tachyne
+spec:
+  replicas: 1
+  selector:
+    matchLabels: { app: tachyne-gw-java-776 }
+  template:
+    metadata:
+      labels: { app: tachyne-gw-java-776 }
+    spec:
+      containers:
+        - name: gw
+          image: ghcr.io/tachyne/tachyne-gw-java-776:latest
+          env:
+            - { name: TACHYNE_LISTEN, value: ":25576" }
+            - { name: TACHYNE_BACKEND, value: "tachyne-world.tachyne.svc:25500" }
+            - name: TACHYNE_ATTACH_TOKEN
+              valueFrom: { secretKeyRef: { name: tachyne-attach-token, key: token } }
+          ports: [{ containerPort: 25576 }]
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: tachyne-gw-java-776
+  namespace: tachyne
+spec:
+  selector: { app: tachyne-gw-java-776 }
+  ports: [{ port: 25576 }]
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tachyne-gw-bedrock
+  namespace: tachyne
+spec:
+  replicas: 1
+  selector:
+    matchLabels: { app: tachyne-gw-bedrock }
+  template:
+    metadata:
+      labels: { app: tachyne-gw-bedrock }
+    spec:
+      containers:
+        - name: gw
+          image: ghcr.io/tachyne/tachyne-gw-bedrock:latest
+          env:
+            - { name: TACHYNE_LISTEN, value: ":19132" }
+            - { name: TACHYNE_BACKEND, value: "tachyne-world.tachyne.svc:25500" }
+            - name: TACHYNE_ATTACH_TOKEN
+              valueFrom: { secretKeyRef: { name: tachyne-attach-token, key: token } }
+          ports: [{ containerPort: 19132, protocol: UDP }]
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: tachyne-gw-bedrock
+  namespace: tachyne
+spec:
+  selector: { app: tachyne-gw-bedrock }
+  ports: [{ port: 19132, protocol: UDP }]
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tachyne-ingress
+  namespace: tachyne
+spec:
+  replicas: 1
+  selector:
+    matchLabels: { app: tachyne-ingress }
+  template:
+    metadata:
+      labels: { app: tachyne-ingress }
+    spec:
+      containers:
+        - name: ingress
+          image: ghcr.io/tachyne/tachyne-ingress:latest
+          env:
+            - { name: INGRESS_LISTEN, value: ":25565" }
+            - { name: INGRESS_ROUTES, value: "770-772=tachyne-gw-java-770.tachyne.svc:25570,776=tachyne-gw-java-776.tachyne.svc:25576" }
+            - { name: INGRESS_BEDROCK_BACKEND, value: "tachyne-gw-bedrock.tachyne.svc:19132" }
+            - { name: INGRESS_PROXY, value: "1" }
+          ports:
+            - { containerPort: 25565, protocol: TCP }
+            - { containerPort: 19132, protocol: UDP }
+---
+# The public entrypoint. LoadBalancer works on clouds and on bare metal with
+# MetalLB; on a plain single node, switch to NodePort or externalIPs.
+apiVersion: v1
+kind: Service
+metadata:
+  name: tachyne-ingress
+  namespace: tachyne
+spec:
+  type: LoadBalancer
+  selector: { app: tachyne-ingress }
+  ports:
+    - { name: java, port: 25565, protocol: TCP }
+    - { name: bedrock, port: 19132, protocol: UDP }
