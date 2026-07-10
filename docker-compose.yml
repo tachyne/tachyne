@@ -12,9 +12,12 @@
 # Want to walk a 1:1-scale real Cape Town instead? Start with the earth
 # overlay:   docker compose -f docker-compose.yml -f docker-compose.earth.yml up -d
 #
-# This stack runs OPEN (no whitelist) — fine on a LAN, not for the internet.
-# For authorization, deploy tachyne-access and set TACHYNE_ACCESS_URL on the
-# gateways (see github.com/tachyne/tachyne-access).
+# This stack runs OPEN: no whitelist, no IP filtering, and Java logins are
+# OFFLINE-MODE (no Mojang account verification — anyone can join under any
+# name, including the op name). Great on a LAN with people you trust; do NOT
+# expose it to the internet as-is. For authorization, deploy tachyne-access
+# and set TACHYNE_ACCESS_URL on the gateways
+# (see github.com/tachyne/tachyne-access).
 
 x-token: &token TACHYNE_ATTACH_TOKEN=quickstart-change-me
 

@@ -31,6 +31,11 @@ TACHYNE_OPS=YourPlayerName docker compose up -d
 That's the **classic experience**: a single world container, procedurally
 generated, effectively infinite, full survival — no sharding, no boundaries.
 
+> **Open by default:** a fresh server has no whitelist and Java logins are
+> offline-mode (no account verification — anyone can join under any name).
+> Perfect for a LAN; don't expose it to the internet as-is. For real
+> authorization, add [tachyne-access](https://github.com/tachyne/tachyne-access).
+
 ### Variant: walk the real Cape Town
 
 ```sh
