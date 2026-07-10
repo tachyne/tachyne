@@ -1,12 +1,19 @@
 # Earth-mode overlay: the same stack, but the world is GREATER CAPE TOWN at
-# 1:1 scale from real elevation data. You spawn in the city bowl looking up
-# at Table Mountain. Creative by default — it's a world for exploring.
+# TRUE 1:1 scale from real elevation data — horizontally AND vertically (the
+# world ceiling is raised to y=1664, so Table Mountain's plateau stands at
+# its real ~1,060 m with real cliff pitch). You spawn in the city bowl
+# looking up at it. Creative by default — it's a world for exploring.
+#
+# Java clients hold a lot more world here than vanilla ever shows: if your
+# client runs out of heap at high render distance, give it -Xmx4G in the
+# launcher or lower the render-distance slider. (Bedrock is capped at y=320
+# by the platform — summits plateau there.)
 #
 #   docker compose -f docker-compose.yml -f docker-compose.earth.yml up -d
 services:
   world:
     command: ["-attach", ":25500",
-              "-earth", "capetown", "-earth-vscale", "4.5",
+              "-earth", "capetown", "-earth-vscale", "1", "-ceiling", "1664",
               "-spawn", "-647,1447",
               "-gamemode", "creative",
               "-ops", "${TACHYNE_OPS:-}"]

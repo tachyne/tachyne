@@ -43,8 +43,10 @@ TACHYNE_OPS=YourPlayerName docker compose -f docker-compose.yml -f docker-compos
 ```
 
 Earth mode replaces the terrain generator with real elevation data
-(Copernicus GLO-30): greater Cape Town at **1:1 scale**. You spawn in the
-city bowl looking up at Table Mountain, in creative so you can fly it.
+(Copernicus GLO-30): greater Cape Town at **true 1:1 scale — horizontally
+and vertically** (the world ceiling is raised so Table Mountain's plateau
+stands at its real ~1,060 m). You spawn in the city bowl looking up at it,
+in creative so you can fly it.
 
 ## Run it on Kubernetes
 
