@@ -12,6 +12,14 @@ changes between updates. **Bug reports are genuinely useful** — please open a
 GitHub Issue with your client version/edition and what you saw. Contributions are
 welcome too — see each code repo's `CONTRIBUTING.md`.
 
+**What's implemented?** Before you commit an evening to it, read
+[tachyne-world's feature matrix](https://github.com/tachyne/tachyne-world#what-to-expect-vanilla-parity-at-a-glance)
+— an honest implemented / partial / missing table. Short version: the full
+survival loop, the complete mob roster, enchanting/brewing/anvils, villages,
+the Nether and the End with the dragon fight, redstone tier 1, and the whole
+vanilla advancement tree all work; statistics, maps, scoreboards, fishing,
+raids and most generated structures don't yet.
+
 
 **One world, every client.** tachyne is a Minecraft-compatible server written
 from scratch in pure Go, with a versionless core: the engine simulates the
