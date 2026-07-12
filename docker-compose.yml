@@ -52,10 +52,17 @@ services:
     environment:
       - NATS_URL=nats://nats:4222
       - TACHYNE_REGISTRY=http://registry:8080
+      - BLUEMAP_WORLD=/world/world.gob # for the bluemap 3D-map plugin
+      # BlueMap renders with Mojang's textures; uncomment to accept Mojang's
+      # EULA (https://account.mojang.com/documents/minecraft_eula) so the
+      # bluemap plugin may download them:
+      # - BLUEMAP_ACCEPT_DOWNLOAD=true
     volumes:
       - plugin-data:/data
+      - world-data:/world:ro # bluemap reads the world files directly
     ports:
       - "8100:8100" # webmap, once installed (/plugin → install webmap)
+      - "8124:8124" # bluemap 3D map, once installed
     depends_on: [nats, registry]
     restart: unless-stopped
 

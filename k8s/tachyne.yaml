@@ -301,11 +301,24 @@ spec:
             - { name: GOPATH, value: "/data/go" }
             - { name: GOCACHE, value: "/data/gocache" }
             - { name: GOTMPDIR, value: "/data/tmp" }
-          ports: [{ containerPort: 8100, name: webmap }]
-          volumeMounts: [{ name: data, mountPath: /data }]
+            # For the bluemap 3D-map plugin: it reads the world files (mounted
+            # below). Setting BLUEMAP_ACCEPT_DOWNLOAD accepts Mojang's EULA
+            # (https://account.mojang.com/documents/minecraft_eula) so BlueMap
+            # may download the textures it renders with.
+            - { name: BLUEMAP_WORLD, value: "/world/world.gob" }
+            # - { name: BLUEMAP_ACCEPT_DOWNLOAD, value: "true" }
+          ports:
+            - { containerPort: 8100, name: webmap }
+            - { containerPort: 8124, name: bluemap }
+          volumeMounts:
+            - { name: data, mountPath: /data }
+            - { name: world, mountPath: /world, readOnly: true }
           resources:
             requests: { cpu: 100m, memory: 256Mi }
-            limits: { cpu: "2", memory: 2Gi }
+            limits: { cpu: "2", memory: 3Gi }
+      volumes:
+        - name: world
+          persistentVolumeClaim: { claimName: data-tachyne-world-0, readOnly: true }
       initContainers:
         - name: mkdirs
           image: ghcr.io/tachyne/tachyne-plugin-manager:latest
@@ -327,3 +340,4 @@ spec:
   selector: { app: tachyne-plugin-manager }
   ports:
     - { name: webmap, port: 8100 }
+    - { name: bluemap, port: 8124 }
