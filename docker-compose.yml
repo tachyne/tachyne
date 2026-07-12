@@ -26,11 +26,48 @@ services:
     image: ghcr.io/tachyne/tachyne-world:latest
     command: ["-attach", ":25500",
               "-gamemode", "survival",
+              "-nats", "nats://nats:4222",
               "-ops", "${TACHYNE_OPS:-}"]
     environment:
       - ATTACH_TOKEN=quickstart-change-me
     volumes:
       - world-data:/var/world
+    depends_on: [nats]
+    restart: unless-stopped
+
+  # The message bus: daemon plugins, the plugin manager's control plane, and
+  # any external integration attach here.
+  nats:
+    image: nats:2.10
+    restart: unless-stopped
+
+  # The plugin manager: /plugin in game drives it — install/upgrade/remove
+  # daemon plugins (built from source) while everything runs. The webmap
+  # daemon serves on 8100 once installed.
+  plugin-manager:
+    image: ghcr.io/tachyne/tachyne-plugin-manager:latest
+    command: ["-config", "/data/daemons.json",
+              "-cache", "/data/cache",
+              "-name", "manager"]
+    environment:
+      - NATS_URL=nats://nats:4222
+      - TACHYNE_REGISTRY=http://registry:8080
+    volumes:
+      - plugin-data:/data
+    ports:
+      - "8100:8100" # webmap, once installed (/plugin → install webmap)
+    depends_on: [nats, registry]
+    restart: unless-stopped
+
+  # The plugin registry: search + install-by-name + out-of-date checks for
+  # /plugin. Starts empty — list a plugin with one request, e.g. webmap:
+  #   curl -X POST localhost:8080/v1/plugins   #        -d '{"module":"github.com/tachyne/tachyne-world/daemons/webmap"}'
+  registry:
+    image: ghcr.io/tachyne/tachyne-registry:latest
+    volumes:
+      - registry-data:/data
+    ports:
+      - "8080:8080"
     restart: unless-stopped
 
   gw-java-770:
@@ -75,3 +112,5 @@ services:
 
 volumes:
   world-data:
+  plugin-data:
+  registry-data:

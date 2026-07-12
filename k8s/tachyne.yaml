@@ -37,7 +37,9 @@ spec:
       containers:
         - name: world
           image: ghcr.io/tachyne/tachyne-world:latest
-          args: ["-attach", ":25500", "-gamemode", "survival", "-ops", "<your-name>"]
+          args: ["-attach", ":25500", "-gamemode", "survival",
+                 "-nats", "nats://tachyne-nats.tachyne.svc:4222",
+                 "-ops", "<your-name>"]
           env:
             - name: ATTACH_TOKEN
               valueFrom: { secretKeyRef: { name: tachyne-attach-token, key: token } }
@@ -195,3 +197,133 @@ spec:
   ports:
     - { name: java, port: 25565, protocol: TCP }
     - { name: bedrock, port: 19132, protocol: UDP }
+
+---
+# The message bus: daemon plugins + the plugin manager's control plane.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tachyne-nats
+  namespace: tachyne
+spec:
+  replicas: 1
+  selector:
+    matchLabels: { app: tachyne-nats }
+  template:
+    metadata:
+      labels: { app: tachyne-nats }
+    spec:
+      containers:
+        - name: nats
+          image: nats:2.10
+          ports: [{ containerPort: 4222, name: client }]
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: tachyne-nats
+  namespace: tachyne
+spec:
+  selector: { app: tachyne-nats }
+  ports:
+    - { name: client, port: 4222 }
+---
+# The plugin registry: /plugin search + install-by-name + freshness. Starts
+# empty — list a plugin by POSTing its module path to /v1/plugins.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tachyne-registry
+  namespace: tachyne
+spec:
+  replicas: 1
+  strategy: { type: Recreate }
+  selector:
+    matchLabels: { app: tachyne-registry }
+  template:
+    metadata:
+      labels: { app: tachyne-registry }
+    spec:
+      containers:
+        - name: registry
+          image: ghcr.io/tachyne/tachyne-registry:latest
+          ports: [{ containerPort: 8080, name: http }]
+          volumeMounts: [{ name: data, mountPath: /data }]
+      volumes:
+        - name: data
+          persistentVolumeClaim: { claimName: tachyne-registry-data }
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: tachyne-registry-data
+  namespace: tachyne
+spec:
+  accessModes: ["ReadWriteOnce"]
+  resources: { requests: { storage: 1Gi } }
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: tachyne-registry
+  namespace: tachyne
+spec:
+  selector: { app: tachyne-registry }
+  ports:
+    - { name: http, port: 8080 }
+---
+# The plugin manager: the fleet control plane behind the in-game /plugin
+# command — pulls, builds, boots and supervises daemon plugins.
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: tachyne-plugin-manager
+  namespace: tachyne
+spec:
+  serviceName: tachyne-plugin-manager
+  replicas: 1
+  selector:
+    matchLabels: { app: tachyne-plugin-manager }
+  template:
+    metadata:
+      labels: { app: tachyne-plugin-manager }
+    spec:
+      containers:
+        - name: manager
+          image: ghcr.io/tachyne/tachyne-plugin-manager:latest
+          args: ["-config", "/data/daemons.json", "-cache", "/data/cache"]
+          env:
+            - name: POD_NAME
+              valueFrom: { fieldRef: { fieldPath: metadata.name } }
+            - { name: NATS_URL, value: "nats://tachyne-nats.tachyne.svc:4222" }
+            - { name: TACHYNE_REGISTRY, value: "http://tachyne-registry.tachyne.svc:8080" }
+            - { name: HOME, value: "/data" }
+            - { name: GOPATH, value: "/data/go" }
+            - { name: GOCACHE, value: "/data/gocache" }
+            - { name: GOTMPDIR, value: "/data/tmp" }
+          ports: [{ containerPort: 8100, name: webmap }]
+          volumeMounts: [{ name: data, mountPath: /data }]
+          resources:
+            requests: { cpu: 100m, memory: 256Mi }
+            limits: { cpu: "2", memory: 2Gi }
+      initContainers:
+        - name: mkdirs
+          image: ghcr.io/tachyne/tachyne-plugin-manager:latest
+          command: ["sh", "-c", "mkdir -p /data/go /data/gocache /data/tmp /data/cache"]
+          volumeMounts: [{ name: data, mountPath: /data }]
+  volumeClaimTemplates:
+    - metadata: { name: data }
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        resources: { requests: { storage: 5Gi } }
+---
+# Reach an installed webmap at <node>:8100 (or port-forward this service).
+apiVersion: v1
+kind: Service
+metadata:
+  name: tachyne-webmap
+  namespace: tachyne
+spec:
+  selector: { app: tachyne-plugin-manager }
+  ports:
+    - { name: webmap, port: 8100 }

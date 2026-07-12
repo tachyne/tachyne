@@ -114,6 +114,26 @@ The key property: the engine has **no Minecraft wire code at all**. Adding
 support for a new Minecraft version means a new translation step in a
 gateway — the world, and everyone playing in it, never changes.
 
+## Plugins
+
+The stack ships the whole plugin system: a NATS bus, the **plugin manager**
+(installs, builds, and supervises daemon plugins while everything runs) and
+the **plugin registry** (search, versions, ratings). As an op, just type
+**`/plugin`** in game — a chest-style browser opens with everything
+installed and everything available; click to install, upgrade (progressive
+across shards), uninstall, or rate.
+
+Your registry starts empty. List the first plugin — the live web map — with
+one request, then install it from the in-game browser:
+
+```bash
+curl -X POST localhost:8080/v1/plugins      -d '{"module":"github.com/tachyne/tachyne-world/daemons/webmap"}'
+```
+
+Once installed, the map is at `http://<this-host>:8100`. Writing your own
+plugins (in-process Go or any-language bus daemons):
+[the plugin docs](https://github.com/tachyne/tachyne-world/blob/main/docs/PLUGINS.md).
+
 ## The repos
 
 | Repo | Role |
@@ -123,6 +143,8 @@ gateway — the world, and everyone playing in it, never changes.
 | [tachyne-gw-java-770](https://github.com/tachyne/tachyne-gw-java-770) · [-776](https://github.com/tachyne/tachyne-gw-java-776) · [-bedrock](https://github.com/tachyne/tachyne-gw-bedrock) | per-version client gateways |
 | [tachyne-ingress](https://github.com/tachyne/tachyne-ingress) | the front door: version routing + UDP forwarding |
 | [tachyne-access](https://github.com/tachyne/tachyne-access) | authorization: whitelist, bans, roles, IP ACL |
+| [tachyne-plugin-manager](https://github.com/tachyne/tachyne-plugin-manager) | pulls, builds, boots and supervises daemon plugins |
+| [tachyne-registry](https://github.com/tachyne/tachyne-registry) | plugin registry: discovery over git-hosted plugins |
 
 Contributions welcome — see each repo's `CONTRIBUTING.md`.
 
