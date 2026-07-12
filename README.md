@@ -127,7 +127,7 @@ Your registry starts empty. List the first plugin — the live web map — with
 one request, then install it from the in-game browser:
 
 ```bash
-curl -X POST localhost:8080/v1/plugins      -d '{"module":"github.com/tachyne/tachyne-world/daemons/webmap"}'
+curl -X POST localhost:8080/v1/plugins -d '{"module":"github.com/tachyne/tachyne-world/daemons/webmap"}'
 ```
 
 Once installed, the map is at `http://<this-host>:8100`. Writing your own
