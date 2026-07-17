@@ -17,8 +17,9 @@ welcome too — see each code repo's `CONTRIBUTING.md`.
 — an honest implemented / partial / missing table. Short version: the full
 survival loop, the complete mob roster, enchanting/brewing/anvils, villages,
 the Nether and the End with the dragon fight, redstone tier 1, the whole
-vanilla advancement tree and the Statistics screen all work; maps,
-scoreboards, fishing, raids and most generated structures don't yet.
+vanilla advancement tree and the Statistics screen all work — as do maps,
+scoreboards, fishing and the modern weapons; raids and most generated
+structures don't yet.
 
 
 **One world, every client.** tachyne is a Minecraft-compatible server written
