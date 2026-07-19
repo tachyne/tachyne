@@ -16,17 +16,20 @@ welcome too — see each code repo's `CONTRIBUTING.md`.
 [tachyne-world's feature matrix](https://github.com/tachyne/tachyne-world#what-to-expect-vanilla-parity-at-a-glance)
 — an honest implemented / partial / missing table. Short version: the full
 survival loop, the complete mob roster, enchanting/brewing/anvils, villages,
-the Nether and the End with the dragon fight, redstone tier 1, the whole
+the Nether and the End with the dragon fight, redstone tiers 1–2, the whole
 vanilla advancement tree and the Statistics screen all work — as do maps,
-scoreboards, fishing and the modern weapons; raids and most generated
-structures don't yet.
+scoreboards, fishing, the modern weapons, the sculk family & the Warden, and a
+growing set of generated structures (villages, outposts and ancient cities from
+real vanilla templates, plus shipwrecks, monuments, trial chambers and
+mansions); raids are the main thing that doesn't yet.
 
 
 **One world, every client.** tachyne is a Minecraft-compatible server written
-from scratch in pure Go, with a versionless core: the engine simulates the
-world and emits typed domain events; per-version gateways render them into
-whatever wire format each client speaks. Java 1.21.5–1.21.8, Java 26.2, and
-Bedrock all join the same world — no client mods.
+from scratch in pure Go, with a versionless core: the game is a **database of
+simulation events**, and every version-specific concern lives at the **edge** —
+per-version gateways render those events into whatever wire format each client
+speaks. Java 1.21.5–1.21.8, Java 26.2, and Bedrock all join the same world — no
+client mods, no proxy bolted on after the fact.
 
 ## Run it in one command (Docker)
 
@@ -64,8 +67,10 @@ kubectl apply -f k8s/tachyne.yaml
 ```
 
 The same single-world stack as the compose file (change the attach token in
-the Secret first). For the **sharded multi-pod world** — one world split
-across pods with seamless handover — and earth-mode deployment, see
+the Secret first) — and single-world is what the production cluster runs.
+The **multi-pod sharded world** — one map split across pods, with the silent
+cross-pod handover working as a hard-border prototype — plus earth-mode
+deployment are documented in
 [tachyne-world](https://github.com/tachyne/tachyne-world) (`deploy/`,
 `docs/SHARDING-BUILD.md`, `docs/EARTH.md`).
 
