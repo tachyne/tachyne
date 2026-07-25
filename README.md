@@ -136,14 +136,22 @@ one request, then install it from the in-game browser:
 curl -X POST localhost:8080/v1/plugins -d '{"module":"github.com/tachyne/tachyne-world/daemons/webmap"}'
 ```
 
-Once installed, the map is at `http://<this-host>:8100`. There's also
-**bluemap** — a full 3D map rendered by
-[BlueMap](https://bluemap.bluecolored.de/) — at `http://<this-host>:8124`:
-list `github.com/tachyne/tachyne-world/daemons/bluemap` the same way, but
-first uncomment `BLUEMAP_ACCEPT_DOWNLOAD` in the compose file (BlueMap
-renders with Mojang's textures, and downloading them means accepting
-Mojang's EULA). Writing your own plugins (in-process Go or any-language
-bus daemons):
+Once installed, the map is at `http://<this-host>:8100`.
+
+For a **3D map**, bring up the `map` service — it is behind a compose profile
+because it renders with Mojang's block textures and downloads them on first
+start, which means accepting
+[Mojang's EULA](https://account.mojang.com/documents/minecraft_eula):
+
+```bash
+docker compose --profile map up -d
+```
+
+Then open `http://<this-host>:8123`. It streams the world around your camera,
+draws player and mob markers, and follows live block changes, so builds show up
+as they are placed.
+
+Writing your own plugins (in-process Go or any-language bus daemons):
 [the plugin docs](https://github.com/tachyne/tachyne-world/blob/main/docs/PLUGINS.md).
 
 ## The repos

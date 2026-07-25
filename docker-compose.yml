@@ -52,18 +52,36 @@ services:
     environment:
       - NATS_URL=nats://nats:4222
       - TACHYNE_REGISTRY=http://registry:8080
-      - BLUEMAP_WORLD=/world/world.gob # for the bluemap 3D-map plugin
-      # BlueMap renders with Mojang's textures; uncomment to accept Mojang's
-      # EULA (https://account.mojang.com/documents/minecraft_eula) so the
-      # bluemap plugin may download them:
-      # - BLUEMAP_ACCEPT_DOWNLOAD=true
     volumes:
       - plugin-data:/data
-      - world-data:/world:ro # bluemap reads the world files directly
     ports:
       - "8100:8100" # webmap, once installed (/plugin → install webmap)
-      - "8124:8124" # bluemap 3D map, once installed
     depends_on: [nats, registry]
+    restart: unless-stopped
+
+  # The 3D map. Opt-in, because it renders with Mojang's block textures and
+  # fetches them from Mojang at first start, which means accepting their EULA:
+  #
+  #   docker compose --profile map up -d
+  #
+  # Then open http://<this-host>:8123. It reads the world file read-only and
+  # follows live block changes over the bus, so builds appear as they happen.
+  map:
+    profiles: ["map"]
+    image: ghcr.io/tachyne/tachyne-map:latest
+    environment:
+      - NATS_URL=nats://nats:4222
+      - MAP_WORLD=/world/world.gob
+      # By setting this you accept Mojang's EULA
+      # (https://account.mojang.com/documents/minecraft_eula) so the map may
+      # download the client assets it renders with.
+      - MAP_ACCEPT_DOWNLOAD=true
+    volumes:
+      - world-data:/world:ro
+      - map-cache:/cache
+    ports:
+      - "8123:8100"
+    depends_on: [nats]
     restart: unless-stopped
 
   # The plugin registry: search + install-by-name + out-of-date checks for
@@ -121,3 +139,4 @@ volumes:
   world-data:
   plugin-data:
   registry-data:
+  map-cache:
