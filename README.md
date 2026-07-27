@@ -28,7 +28,9 @@ mansions); raids are the main thing that doesn't yet.
 from scratch in pure Go, with a versionless core: the game is a **database of
 simulation events**, and every version-specific concern lives at the **edge** —
 per-version gateways render those events into whatever wire format each client
-speaks. Java 1.21.5–1.21.8, Java 26.2, and Bedrock all join the same world — no
+speaks. Java 1.21.5–1.21.8, Java 26.2, and Bedrock all join the same world, and
+content newer than a client's own version is downgraded for it rather than sent
+regardless, so an older client is never handed something it cannot render — no
 client mods, no proxy bolted on after the fact.
 
 ## Run it in one command (Docker)
