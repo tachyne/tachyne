@@ -15,14 +15,17 @@ welcome too — see each code repo's `CONTRIBUTING.md`.
 **What's implemented?** Before you commit an evening to it, read
 [tachyne-world's feature matrix](https://github.com/tachyne/tachyne-world#what-to-expect-vanilla-parity-at-a-glance)
 — an honest implemented / partial / missing table. Short version: the full
-survival loop, the complete mob roster, enchanting/brewing/anvils, villages,
-the Nether and the End with the dragon fight, redstone tiers 1–2, the whole
-vanilla advancement tree and the Statistics screen all work — as do maps,
+survival loop, the complete mob roster, enchanting and anvils (brewing is
+thinner — six potion types, and splash/lingering can be thrown but not yet
+brewed), villages,
+the Nether and the End with the dragon fight, redstone tiers 1–2, the
+vanilla advancement tree and the Statistics screen all work (many advancement
+criteria are not yet observable, so the tree is far from fully earnable) — as do maps,
 scoreboards, fishing, the modern weapons, the sculk family & the Warden, and a
 growing set of generated structures (villages, outposts and ancient cities from
 real vanilla templates, plus shipwrecks, monuments, trial chambers and
 mansions). Raids run too — kill a patrol captain, carry Bad Omen into a
-village and the waves come — though Hero of the Village and the warning bell
+village and the waves come — though the warning bell and raid persistence across restarts
 are still to come.
 
 
@@ -42,7 +45,9 @@ TACHYNE_OPS=YourPlayerName docker compose up -d
 ```
 
 - **Java** (1.21.5–1.21.8 or 26.2): connect to `<this-host>:25565`
-- **Bedrock** (latest): connect to `<this-host>:19132`
+- **Bedrock** (latest): connect to `<this-host>:19132` — the Bedrock gateway
+  is younger than the Java one: terrain, entities, movement and chat are
+  live, while inventory screens and the survival HUD are still on the way
 
 That's the **classic experience**: a single world container, procedurally
 generated, effectively infinite, full survival — no sharding, no boundaries.
@@ -169,6 +174,7 @@ Writing your own plugins (in-process Go or any-language bus daemons):
 | [tachyne-access](https://github.com/tachyne/tachyne-access) | authorization: whitelist, bans, roles, IP ACL |
 | [tachyne-plugin-manager](https://github.com/tachyne/tachyne-plugin-manager) | pulls, builds, boots and supervises daemon plugins |
 | [tachyne-registry](https://github.com/tachyne/tachyne-registry) | plugin registry: discovery over git-hosted plugins |
+| [tachyne-map](https://github.com/tachyne/tachyne-map) | the 3D web map: meshes the world in Go, streams it to the browser |
 
 Contributions welcome — see each repo's `CONTRIBUTING.md`.
 

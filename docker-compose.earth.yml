@@ -12,10 +12,14 @@
 #   docker compose -f docker-compose.yml -f docker-compose.earth.yml up -d
 services:
   world:
+    # Compose REPLACES command rather than merging it, so every flag the base
+    # world needs has to be repeated here — including -nats, without which the
+    # plugin bus (and /plugin, the fleet browser and the map) silently go dark.
     command: ["-attach", ":25500",
               "-earth", "capetown", "-earth-vscale", "1", "-ceiling", "1664",
               "-spawn", "-647,1447",
               "-gamemode", "creative",
+              "-nats", "nats://nats:4222",
               "-ops", "${TACHYNE_OPS:-}"]
   # Vistas are the point here: honor render-distance sliders up to the full
   # attach radius (the default cap is 12). Chunk delivery is client-paced
