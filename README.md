@@ -21,7 +21,9 @@ vanilla advancement tree and the Statistics screen all work — as do maps,
 scoreboards, fishing, the modern weapons, the sculk family & the Warden, and a
 growing set of generated structures (villages, outposts and ancient cities from
 real vanilla templates, plus shipwrecks, monuments, trial chambers and
-mansions); raids are the main thing that doesn't yet.
+mansions). Raids run too — kill a patrol captain, carry Bad Omen into a
+village and the waves come — though Hero of the Village and the warning bell
+are still to come.
 
 
 **One world, every client.** tachyne is a Minecraft-compatible server written
