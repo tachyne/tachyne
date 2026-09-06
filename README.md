@@ -22,11 +22,12 @@ the Nether and the End with the dragon fight, redstone tiers 1–2, the
 vanilla advancement tree and the Statistics screen all work (many advancement
 criteria are not yet observable, so the tree is far from fully earnable) — as do maps,
 scoreboards, fishing, the modern weapons, the sculk family & the Warden, and a
-growing set of generated structures (villages, outposts and ancient cities from
-real vanilla templates, plus shipwrecks, monuments, trial chambers and
-mansions). Raids run too — kill a patrol captain, carry Bad Omen into a
-village and the waves come — though the warning bell and raid persistence across restarts
-are still to come.
+growing set of generated structures (villages, outposts, ancient cities,
+bastion remnants and End cities from real vanilla templates, Nether fortresses
+and woodland mansions from ports of vanilla's own piece generators, plus
+shipwrecks, monuments and trial chambers). Raids run too — kill a patrol
+captain, drink its ominous bottle, carry Bad Omen into a village and the waves
+come, bell, gifts and all.
 
 
 **One world, every client.** tachyne is a Minecraft-compatible server written
