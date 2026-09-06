@@ -46,9 +46,10 @@ TACHYNE_OPS=YourPlayerName docker compose up -d
 ```
 
 - **Java** (1.21.5–1.21.8 or 26.2): connect to `<this-host>:25565`
-- **Bedrock** (latest): connect to `<this-host>:19132` — the Bedrock gateway
-  is younger than the Java one: terrain, entities, movement and chat are
-  live, while inventory screens and the survival HUD are still on the way
+- **Bedrock** (latest): connect to `<this-host>:19132` — terrain, entities,
+  movement, chat, the survival HUD, every container and workstation screen,
+  crafting, trading, the creative inventory and portal travel are bridged;
+  the few remaining Bedrock-specific limits are listed in the gateway's README
 
 That's the **classic experience**: a single world container, procedurally
 generated, effectively infinite, full survival — no sharding, no boundaries.
