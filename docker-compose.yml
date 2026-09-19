@@ -126,7 +126,7 @@ services:
     image: ghcr.io/tachyne/tachyne-ingress:latest
     environment:
       - INGRESS_LISTEN=:25565
-      - INGRESS_ROUTES=770-772=gw-java-770:25570,776=gw-java-776:25576
+      - INGRESS_ROUTES=770-772=gw-java-770:25570,776-777=gw-java-776:25576
       - INGRESS_BEDROCK_BACKEND=gw-bedrock:19132
       - INGRESS_PROXY=1
     ports:

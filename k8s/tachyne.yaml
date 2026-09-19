@@ -177,7 +177,7 @@ spec:
           image: ghcr.io/tachyne/tachyne-ingress:latest
           env:
             - { name: INGRESS_LISTEN, value: ":25565" }
-            - { name: INGRESS_ROUTES, value: "770-772=tachyne-gw-java-770.tachyne.svc:25570,776=tachyne-gw-java-776.tachyne.svc:25576" }
+            - { name: INGRESS_ROUTES, value: "770-772=tachyne-gw-java-770.tachyne.svc:25570,776-777=tachyne-gw-java-776.tachyne.svc:25576" }
             - { name: INGRESS_BEDROCK_BACKEND, value: "tachyne-gw-bedrock.tachyne.svc:19132" }
             - { name: INGRESS_PROXY, value: "1" }
           ports:

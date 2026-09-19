@@ -34,7 +34,7 @@ come, bell, gifts and all.
 from scratch in pure Go, with a versionless core: the game is a **database of
 simulation events**, and every version-specific concern lives at the **edge** —
 per-version gateways render those events into whatever wire format each client
-speaks. Java 1.21.5–1.21.8, Java 26.2, and Bedrock all join the same world, and
+speaks. Java 1.21.5–1.21.8, Java 26.2–26.3, and Bedrock all join the same world, and
 content newer than a client's own version is downgraded for it rather than sent
 regardless, so an older client is never handed something it cannot render — no
 client mods, no proxy bolted on after the fact.
@@ -45,7 +45,7 @@ client mods, no proxy bolted on after the fact.
 TACHYNE_OPS=YourPlayerName docker compose up -d
 ```
 
-- **Java** (1.21.5–1.21.8 or 26.2): connect to `<this-host>:25565`
+- **Java** (1.21.5–1.21.8, 26.2 or 26.3): connect to `<this-host>:25565`
 - **Bedrock** (latest): connect to `<this-host>:19132` — terrain, entities,
   movement, chat, the survival HUD, every container and workstation screen,
   crafting, trading, the creative inventory and portal travel are bridged;
@@ -91,7 +91,7 @@ deployment are documented in
 flowchart LR
     subgraph clients [Clients]
         J1["Java 1.21.5–1.21.8"]
-        J2["Java 26.2"]
+        J2["Java 26.2–26.3"]
         B["Bedrock (phone/console/PC)"]
     end
 
