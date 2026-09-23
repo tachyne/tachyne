@@ -34,7 +34,7 @@ come, bell, gifts and all.
 from scratch in pure Go, with a versionless core: the game is a **database of
 simulation events**, and every version-specific concern lives at the **edge** —
 per-version gateways render those events into whatever wire format each client
-speaks. Java 1.21.5–1.21.8, Java 26.2–26.3, and Bedrock all join the same world, and
+speaks. Java 26.2–26.3 and Bedrock join the same world, and
 content newer than a client's own version is downgraded for it rather than sent
 regardless, so an older client is never handed something it cannot render — no
 client mods, no proxy bolted on after the fact.
@@ -45,7 +45,7 @@ client mods, no proxy bolted on after the fact.
 TACHYNE_OPS=YourPlayerName docker compose up -d
 ```
 
-- **Java** (1.21.5–1.21.8, 26.2 or 26.3): connect to `<this-host>:25565`
+- **Java** (26.2 or 26.3): connect to `<this-host>:25565`
 - **Bedrock** (latest): connect to `<this-host>:19132` — terrain, entities,
   movement, chat, the survival HUD, every container and workstation screen,
   crafting, trading, the creative inventory and portal travel are bridged;
@@ -90,7 +90,6 @@ deployment are documented in
 ```mermaid
 flowchart LR
     subgraph clients [Clients]
-        J1["Java 1.21.5–1.21.8"]
         J2["Java 26.2–26.3"]
         B["Bedrock (phone/console/PC)"]
     end
@@ -100,7 +99,6 @@ flowchart LR
     end
 
     subgraph gateways [Per-version gateways — all Minecraft protocol lives here]
-        G1["gw-java-770"]
         G2["gw-java-776"]
         G3["gw-bedrock"]
     end
@@ -112,17 +110,13 @@ flowchart LR
 
     A["tachyne-access<br/>whitelist · bans · roles (optional)"]
 
-    J1 -->|handshake proto 770–772| I
-    J2 -->|handshake proto 776| I
+    J2 -->|handshake proto 776–777| I
     B -->|RakNet/UDP| I
-    I --> G1
     I --> G2
     I --> G3
-    G1 -->|attach protocol :25500<br/>typed domain events| W0
-    G2 --> W0
+    G2 -->|attach protocol :25500<br/>typed domain events| W0
     G3 --> W0
-    G1 -.->|login check| A
-    G2 -.-> A
+    G2 -.->|login check| A
     G3 -.-> A
     W0 <-->|peer mesh :25501<br/>handover · cross-seam shadows| W1
 ```
@@ -171,7 +165,7 @@ Writing your own plugins (in-process Go or any-language bus daemons):
 |---|---|
 | [tachyne-world](https://github.com/tachyne/tachyne-world) | the engine: simulation, worldgen, sharding, earth mode |
 | [tachyne-common](https://github.com/tachyne/tachyne-common) | shared library: attach protocol, renderer, translation chain, gateway pipeline |
-| [tachyne-gw-java-770](https://github.com/tachyne/tachyne-gw-java-770) · [-776](https://github.com/tachyne/tachyne-gw-java-776) · [-bedrock](https://github.com/tachyne/tachyne-gw-bedrock) | per-version client gateways |
+| [tachyne-gw-java-776](https://github.com/tachyne/tachyne-gw-java-776) · [-bedrock](https://github.com/tachyne/tachyne-gw-bedrock) | per-version client gateways ([-770](https://github.com/tachyne/tachyne-gw-java-770), for 1.21.5–1.21.8, is retired) |
 | [tachyne-ingress](https://github.com/tachyne/tachyne-ingress) | the front door: version routing + UDP forwarding |
 | [tachyne-access](https://github.com/tachyne/tachyne-access) | authorization: whitelist, bans, roles, IP ACL |
 | [tachyne-plugin-manager](https://github.com/tachyne/tachyne-plugin-manager) | pulls, builds, boots and supervises daemon plugins |
