@@ -56,8 +56,10 @@ generated, effectively infinite, full survival — no sharding, no boundaries.
 
 > **Open by default:** a fresh server has no whitelist and Java logins are
 > offline-mode (no account verification — anyone can join under any name).
-> Perfect for a LAN; don't expose it to the internet as-is. For real
-> authorization, add [tachyne-access](https://github.com/tachyne/tachyne-access).
+> Perfect for a LAN; don't expose it to the internet as-is. Set
+> `TACHYNE_ONLINE_MODE=on` on the Java gateway so players sign in with their
+> Mojang accounts, and add [tachyne-access](https://github.com/tachyne/tachyne-access)
+> for whitelists, bans and operator roles.
 
 ### Variant: walk the real Cape Town
 
